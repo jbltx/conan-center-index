@@ -1,35 +1,23 @@
 --- a/packages/tml-cpp/CMakeLists.txt
 +++ b/packages/tml-cpp/CMakeLists.txt
-@@ -3,11 +3,6 @@
-
- include(GenerateExportHeader)
-
--# Allow callers (e.g. Conan) to override the thirdparty directory.
--# Defaults to the monorepo layout where thirdparty/ sits two levels above this file.
--if(NOT DEFINED THIRDPARTY_DIR)
--    set(THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty")
--endif()
-
- # Set C++17 standard for modern features
- set(CMAKE_CXX_STANDARD 17)
-@@ -94,10 +89,12 @@
+@@ -88,10 +88,12 @@
      endif()
  endif()
-
+ 
 +find_package(oniguruma REQUIRED CONFIG)
 +find_package(RapidJSON REQUIRED CONFIG)
 +
  # Include directories
  include_directories(
      ${CMAKE_CURRENT_SOURCE_DIR}/src
--    ${THIRDPARTY_DIR}/rapidjson/include
+-    ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/rapidjson/include
  )
-
+ 
  # Source files
-@@ -156,79 +153,13 @@
+@@ -150,79 +152,13 @@
      src/wasm/bigint_bindings.h
  )
-
+ 
 -include(ExternalProject)
 -
 -# Find Oniguruma library (skip for WASM builds, will build for WASM)
@@ -88,7 +76,7 @@
 -
 -    ExternalProject_Add(
 -        oniguruma
--        SOURCE_DIR ${THIRDPARTY_DIR}/oniguruma
+-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/oniguruma
 -        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/oniguruma/build
 -        CMAKE_ARGS ${ONIG_CMAKE_ARGS}
 -        BUILD_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE}
@@ -100,15 +88,15 @@
 -else()
 +if(USE_WASM_BUILD)
      message(STATUS "Building for WASM - oniguruma will be built from source")
-
+ 
      # Build oniguruma for WASM
      set(ONIG_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/oniguruma-wasm)
-
+ 
 +    include(ExternalProject)
      ExternalProject_Add(
          oniguruma_wasm
-         SOURCE_DIR ${THIRDPARTY_DIR}/oniguruma
-@@ -369,15 +300,8 @@
+         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty/oniguruma
+@@ -363,15 +299,8 @@
      target_include_directories(tml PUBLIC "${ONIGURUMA_INCLUDE_DIR}")
      target_include_directories(tml-browser PUBLIC "${ONIGURUMA_INCLUDE_DIR}")
  else()
@@ -124,5 +112,5 @@
 +    target_link_libraries(tml PUBLIC oniguruma::oniguruma)
 +    target_include_directories(tml PRIVATE "${RAPIDJSON_INCLUDE_DIRS}")
  endif()
-
+ 
  # Install targets
