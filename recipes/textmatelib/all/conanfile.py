@@ -60,7 +60,7 @@ class TextmatelibConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure()
+        cmake.configure(build_script_folder=os.path.join("packages", "tml-cpp"))
         cmake.build()
 
     def package(self):

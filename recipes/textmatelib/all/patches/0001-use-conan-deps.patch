@@ -1,5 +1,5 @@
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
+--- a/packages/tml-cpp/CMakeLists.txt
++++ b/packages/tml-cpp/CMakeLists.txt
 @@ -3,11 +3,6 @@
 
  include(GenerateExportHeader)
